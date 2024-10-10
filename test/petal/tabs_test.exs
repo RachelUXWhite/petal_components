@@ -1,6 +1,7 @@
 defmodule PetalComponents.TabsTest do
   use ComponentCase
   import PetalComponents.Tabs
+  import PetalComponents.Icon
 
   test "Test tabs active" do
     assigns = %{}
@@ -53,6 +54,19 @@ defmodule PetalComponents.TabsTest do
     assert html =~ "<a"
     assert html =~ "href="
     assert html =~ "phx-click"
+  end
+
+  test "Test tabs custom css class" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.tabs class="flex-col sm:flex-row space-x">
+        <.tab class="hello" is_active to="/">Home</.tab>
+      </.tabs>
+      """)
+
+    assert html =~ " hello"
   end
 
   test "patch" do
@@ -114,10 +128,10 @@ defmodule PetalComponents.TabsTest do
       rendered_to_string(~H"""
       <.tabs underline>
         <.tab underline is_active to="/">
-          <Heroicons.home class="w-5 h-5 mr-2" /> Home
+          <.icon name="hero-home" class="w-5 h-5 mr-2" /> Home
         </.tab>
         <.tab underline link_type="a" to="/" phx-click="click_event">
-          <Heroicons.building_office class="w-5 h-5 mr-2" /> Company
+          <.icon name="hero-building-office" class="w-5 h-5 mr-2" /> Company
         </.tab>
       </.tabs>
       """)
@@ -125,7 +139,8 @@ defmodule PetalComponents.TabsTest do
     assert html =~ "<a"
     assert html =~ "href="
     assert html =~ "phx-click"
-    assert html =~ "<svg"
+    assert find_icon(html, "hero-home")
+    assert find_icon(html, "hero-building-office")
   end
 
   test "dark mode" do
@@ -135,10 +150,10 @@ defmodule PetalComponents.TabsTest do
       rendered_to_string(~H"""
       <.tabs underline>
         <.tab underline is_active to="/">
-          <Heroicons.home class="w-5 h-5 mr-2" /> Home
+          <.icon name="hero-home" class="w-5 h-5 mr-2" /> Home
         </.tab>
         <.tab underline link_type="a" to="/" phx-click="click_event">
-          <Heroicons.building_office class="w-5 h-5 mr-2" /> Company
+          <.icon name="hero-building-office" class="w-5 h-5 mr-2" /> Company
         </.tab>
       </.tabs>
       """)
@@ -146,7 +161,8 @@ defmodule PetalComponents.TabsTest do
     assert html =~ "<a"
     assert html =~ "href="
     assert html =~ "phx-click"
-    assert html =~ "<svg"
+    assert find_icon(html, "hero-home")
+    assert find_icon(html, "hero-building-office")
     assert html =~ "pc-tab__underline--is-active"
   end
 
@@ -157,10 +173,10 @@ defmodule PetalComponents.TabsTest do
       rendered_to_string(~H"""
       <.tabs custom-attrs="1" underline>
         <.tab custom-attrs="2" underline is_active to="/">
-          <Heroicons.home class="w-5 h-5 mr-2" /> Home
+          <.icon name="hero-home" class="w-5 h-5 mr-2" /> Home
         </.tab>
         <.tab custom-attrs="3" underline link_type="a" to="/" phx-click="click_event">
-          <Heroicons.building_office class="w-5 h-5 mr-2" /> Company
+          <.icon name="hero-building-office" class="w-5 h-5 mr-2" /> Company
         </.tab>
       </.tabs>
       """)
@@ -168,5 +184,18 @@ defmodule PetalComponents.TabsTest do
     for i <- 1..3 do
       assert html =~ ~s{custom-attrs="#{i}"}
     end
+  end
+
+  test "disabled tab" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.tabs custom-attrs="1" underline>
+        <.tab disabled to="/">Home</.tab>
+      </.tabs>
+      """)
+
+    assert html =~ "disabled"
   end
 end

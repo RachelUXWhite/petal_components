@@ -54,4 +54,76 @@ defmodule PetalComponents.ModalTest do
 
     assert html =~ ~s{custom-attrs="123"}
   end
+
+  test "close_on_click_away" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal></.modal>
+      """)
+
+    assert html =~ ~s{phx-click-away}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal close_on_click_away={false}></.modal>
+      """)
+
+    refute html =~ ~s{phx-click-away}
+  end
+
+  test "close_on_escape" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal></.modal>
+      """)
+
+    assert html =~ ~s{phx-window-keydown}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal close_on_escape={false}></.modal>
+      """)
+
+    refute html =~ ~s{phx-window-keydown}
+  end
+
+  test "hide_close_button" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal></.modal>
+      """)
+
+    assert find_icon(html)
+
+    html =
+      rendered_to_string(~H"""
+      <.modal hide_close_button></.modal>
+      """)
+
+    refute find_icon(html)
+  end
+
+  test "class" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.modal class="h-full"></.modal>
+      """)
+
+    assert html =~ "\"pc-modal__box--md pc-modal__box h-full\""
+
+    html =
+      rendered_to_string(~H"""
+      <.modal></.modal>
+      """)
+
+    assert html =~ "\"pc-modal__box--md pc-modal__box \""
+  end
 end

@@ -8,7 +8,7 @@
 </p>
 
   <p align="center">
-    Petal is a set of HEEX components that makes it easy for Phoenix developers to build beautiful web apps. Think Bootstrap or MUI, but written in HEEX using Tailwind CSS classes.
+    Petal is a set of HEEX components that makes it easy for Phoenix developers to build beautiful web apps. Think Bootstrap or MUI, but written in HEEX using Tailwind CSS classes. Work in both live and dead (controller) views.
   </p>
 </p>
 
@@ -21,9 +21,6 @@
   </a>
   <a href="https://opensource.org/licenses/MIT" alt="MIT">
     <img src="https://img.shields.io/badge/license-MIT-green" />
-  </a>
-  <a href="https://codecov.io/gh/petalframework/petal_components" >
-    <img src="https://codecov.io/gh/petalframework/petal_components/branch/main/graph/badge.svg?token=47KQGJOT1G"/>
   </a>
 </p>
 
@@ -64,6 +61,10 @@ We have a fresh [Phoenix boilerplate template](https://github.com/petalframework
 
 Install our [VSCode extension](https://marketplace.visualstudio.com/items?itemName=petalframework.vscode-petal-components-snippets&ssr=false#overview) to gain access to 65+ snippets for all of the components.
 
+## Official Figma UI kit
+
+We’ve released an [official Figma UI kit for Petal](https://www.figma.com/community/file/1374192831096114078/official-petal-ui-kit). This kit includes all the open source and pro components you need to design your app in Figma.
+
 ## Roadmap
 
 ### Layout
@@ -93,7 +94,7 @@ Install our [VSCode extension](https://marketplace.visualstudio.com/items?itemNa
 - [x] change color
 - [x] loading state (with spinner)
 - [x] filled vs outline
-- [ ] button group
+- [x] button group
 
 ### Misc
 - [x] menu dropdown
@@ -110,7 +111,6 @@ Install our [VSCode extension](https://marketplace.visualstudio.com/items?itemNa
 - [x] badges
 - [x] progress
 - [x] links
-- [ ] tooltips
 
 ## FAQ
 
@@ -172,7 +172,14 @@ A: Yes! You can customize the components by overriding the CSS classes. For exam
 }
 ```
 
+## Suggestions
+
+If you have a suggestion for a new component, you can add it here on [our roadmap](https://petal.build/components/roadmap).
+
 ## Contributing
 
 If you'd like to help out we've got a [Phoenix umbrella app](https://github.com/petalframework/petal_development) that allows you to easily contribute to Petal Components (which is installed as a git submodule). If you create a new component then feel free to submit a PR. Ideally one from the roadmap but we're open to any new components that would benefit others!
 
+## Community, Updates & Support
+
+Looking to talk Petal with fellow devs? [Join our great community](https://discord.com/invite/exbwVbjAct) over at our discord. For regular updates, consider signing up to [petal.build](https://petal.build/) and if you have any questions feel free to reach out to us at <support@petal.build>.

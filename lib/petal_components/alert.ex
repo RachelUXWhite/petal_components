@@ -1,6 +1,7 @@
 defmodule PetalComponents.Alert do
   use Phoenix.Component
-  import PetalComponents.Helpers
+  alias PetalComponents.Helpers
+  import PetalComponents.Icon
 
   attr(:color, :string,
     default: "info",
@@ -8,7 +9,7 @@ defmodule PetalComponents.Alert do
   )
 
   attr(:with_icon, :boolean, default: false, doc: "adds some icon base classes")
-  attr(:class, :string, default: "", doc: "CSS class for parent div")
+  attr(:class, :any, default: nil, doc: "CSS class for parent div")
   attr(:heading, :string, default: nil, doc: "label your heading")
   attr(:label, :string, default: nil, doc: "label your alert")
   attr(:rest, :global)
@@ -24,10 +25,18 @@ defmodule PetalComponents.Alert do
     assigns =
       assigns
       |> assign(:classes, alert_classes(assigns))
+      |> assign(:heading_id, Helpers.uniq_id(assigns.heading || "alert-heading"))
+      |> assign(:label_id, Helpers.uniq_id(assigns.label || "alert-label"))
 
     ~H"""
     <%= unless label_blank?(@label, @inner_block) do %>
-      <div {@rest} class={@classes}>
+      <div
+        {@rest}
+        class={@classes}
+        role="dialog"
+        aria-labelledby={(@heading && @heading_id) || @label_id}
+        aria-describedby={@label_id}
+      >
         <%= if @with_icon do %>
           <div class="pc-alert__icon-container">
             <.get_icon color={@color} />
@@ -38,22 +47,22 @@ defmodule PetalComponents.Alert do
           <div class="pc-alert__inner">
             <div>
               <%= if @heading do %>
-                <div class="pc-alert__heading">
+                <h2 id={@heading_id} class="pc-alert__heading">
                   <%= @heading %>
-                </div>
+                </h2>
               <% end %>
 
-              <div class="pc-alert__label">
+              <div id={@label_id} class="pc-alert__label">
                 <%= render_slot(@inner_block) || @label %>
               </div>
             </div>
 
             <%= if @close_button_properties do %>
               <button
-                class={build_class(["pc-alert__dismiss-button", get_dismiss_icon_classes(@color)])}
+                class={["pc-alert__dismiss-button", get_dismiss_icon_classes(@color)]}
                 {@close_button_properties}
               >
-                <Heroicons.x_mark solid class="self-start w-4 h-4" />
+                <.icon name="hero-x-mark-solid" class="self-start w-4 h-4" />
               </button>
             <% end %>
           </div>
@@ -73,7 +82,7 @@ defmodule PetalComponents.Alert do
     color_css = get_color_classes(opts.color)
     custom_classes = opts.class
 
-    build_class([base_classes, color_css, custom_classes])
+    [base_classes, color_css, custom_classes]
   end
 
   defp get_color_classes("info"),
@@ -102,25 +111,25 @@ defmodule PetalComponents.Alert do
 
   defp get_icon(%{color: "info"} = assigns) do
     ~H"""
-    <Heroicons.information_circle />
+    <.icon name="hero-information-circle" />
     """
   end
 
   defp get_icon(%{color: "success"} = assigns) do
     ~H"""
-    <Heroicons.check_circle />
+    <.icon name="hero-check-circle" />
     """
   end
 
   defp get_icon(%{color: "warning"} = assigns) do
     ~H"""
-    <Heroicons.exclamation_circle />
+    <.icon name="hero-exclamation-circle" />
     """
   end
 
   defp get_icon(%{color: "danger"} = assigns) do
     ~H"""
-    <Heroicons.x_circle />
+    <.icon name="hero-x-circle" />
     """
   end
 

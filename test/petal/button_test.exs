@@ -1,6 +1,7 @@
 defmodule PetalComponents.ButtonTest do
   use ComponentCase
   import PetalComponents.Button
+  import PetalComponents.Icon
 
   test "button" do
     assigns = %{}
@@ -124,12 +125,47 @@ defmodule PetalComponents.ButtonTest do
     html =
       rendered_to_string(~H"""
       <.icon_button to="/" link_type="button" size="xs" color="primary">
-        <Heroicons.clock solid />
+        <.icon name="hero-clock-solid" />
       </.icon_button>
       """)
 
-    assert html =~ "<svg"
+    assert find_icon(html, "hero-clock-solid")
     assert html =~ "pc-icon-button-bg--primary"
+    refute html =~ "tooltip"
+  end
+
+  test "icon button with color" do
+    colors = ~w(primary secondary success danger warning info gray)
+
+    Enum.each(colors, fn color ->
+      assigns = %{color: color}
+
+      html =
+        rendered_to_string(~H"""
+        <.icon_button color={@color}>
+          <.icon name="hero-clock" />
+        </.icon_button>
+        """)
+
+      assert find_icon(html, "hero-clock")
+      assert html =~ "pc-icon-button-bg--#{color}"
+    end)
+  end
+
+  test "icon button with tooltip" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.icon_button to="/" link_type="button" size="xs" color="primary" tooltip="Hello world!">
+        <.icon name="hero-clock-solid" />
+      </.icon_button>
+      """)
+
+    assert find_icon(html, "hero-clock-solid")
+    assert html =~ "pc-icon-button-bg--primary"
+    assert html =~ "role=\"tooltip"
+    assert html =~ "Hello world!"
   end
 
   test "should include additional assigns" do
@@ -149,11 +185,11 @@ defmodule PetalComponents.ButtonTest do
 
     html =
       rendered_to_string(~H"""
-      <.button icon={:home} label="Home" />
+      <.button icon="hero-home" label="Home" />
       """)
 
     assert html =~ "<button"
-    assert html =~ "<svg"
+    assert find_icon(html, "hero-home")
   end
 
   test "disabled button" do
@@ -172,8 +208,32 @@ defmodule PetalComponents.ButtonTest do
       <.button disabled link_type="live_redirect" label="Home" />
       """)
 
-    assert html =~ ~s{href="#"}
     assert html =~ " disabled"
+    refute html =~ "href"
     refute html =~ " phx-"
+  end
+
+  test "rest attrs" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.button
+        label="Home"
+        method="x"
+        download="x"
+        hreflang="x"
+        ping="x"
+        referrerpolicy="x"
+        rel="x"
+        target="x"
+        type="x"
+        value="x"
+        name="x"
+        form="x"
+      />
+      """)
+
+    assert html =~ ~s{method="x"}
   end
 end

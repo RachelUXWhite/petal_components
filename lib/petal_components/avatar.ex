@@ -1,10 +1,12 @@
 defmodule PetalComponents.Avatar do
   use Phoenix.Component
-  import PetalComponents.Helpers
+
+  import PetalComponents.Icon
 
   attr(:src, :string, default: nil, doc: "hosted avatar URL")
+  attr(:alt, :string, default: nil, doc: "alt text for avatar image")
   attr(:size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl"])
-  attr(:class, :string, default: "", doc: "CSS class")
+  attr(:class, :any, default: nil, doc: "CSS class")
   attr(:name, :string, default: nil, doc: "name for placeholder initials")
 
   attr(:random_color, :boolean,
@@ -19,28 +21,28 @@ defmodule PetalComponents.Avatar do
     <%= if src_blank?(@src) && !@name do %>
       <div
         {@rest}
-        class={
-          build_class([
-            "pc-avatar--with-placeholder-icon",
-            get_size_classes(@size),
-            @class
-          ])
-        }
+        role="img"
+        aria-label="user avatar"
+        class={[
+          "pc-avatar--with-placeholder-icon",
+          "pc-avatar--#{@size}",
+          @class
+        ]}
       >
-        <Heroicons.user solid class="pc-avatar__placeholder-icon" />
+        <.icon name="hero-user-solid" class="pc-avatar__placeholder-icon" />
       </div>
     <% else %>
       <%= if src_blank?(@src) && @name do %>
         <div
           {@rest}
           style={maybe_generate_random_color(@random_color, @name)}
-          class={
-            build_class([
-              "pc-avatar--with-placeholder-initials",
-              get_size_classes(@size),
-              @class
-            ])
-          }
+          role="img"
+          aria-label="user avatar"
+          class={[
+            "pc-avatar--with-placeholder-initials",
+            "pc-avatar--#{@size}",
+            @class
+          ]}
         >
           <%= generate_initials(@name) %>
         </div>
@@ -48,13 +50,12 @@ defmodule PetalComponents.Avatar do
         <img
           {@rest}
           src={@src}
-          class={
-            build_class([
-              "pc-avatar--with-image",
-              get_size_classes(@size),
-              @class
-            ])
-          }
+          alt={@alt || @src}
+          class={[
+            "pc-avatar--with-image",
+            "pc-avatar--#{@size}",
+            @class
+          ]}
         />
       <% end %>
     <% end %>
@@ -62,58 +63,21 @@ defmodule PetalComponents.Avatar do
   end
 
   attr(:size, :string, default: "md", values: ["xs", "sm", "md", "lg", "xl"])
-  attr(:class, :string, default: "", doc: "CSS class")
+  attr(:class, :any, default: nil, doc: "CSS class")
   attr(:avatars, :list, default: [], doc: "list of your hosted avatar URLs")
   attr(:rest, :global)
 
   def avatar_group(assigns) do
-    assigns =
-      assigns
-      |> assign(:classes, avatar_group_classes(assigns))
-
     ~H"""
-    <div {@rest} class={@classes}>
+    <div {@rest} class={["pc-avatar-group--#{@size}", @class]}>
       <%= for src <- @avatars do %>
-        <.avatar src={src} size={@size} class={build_class(["pc-avatar-group", @class])} />
+        <.avatar src={src} size={@size} class="pc-avatar-group" />
       <% end %>
     </div>
     """
   end
 
-  defp get_size_classes(size) do
-    case size do
-      "xs" -> "pc-avatar--xs"
-      "sm" -> "pc-avatar--sm"
-      "md" -> "pc-avatar--md"
-      "lg" -> "pc-avatar--lg"
-      "xl" -> "pc-avatar--xl"
-    end
-  end
-
-  defp avatar_group_classes(opts) do
-    opts = %{
-      size: opts[:size] || "md",
-      class: opts[:class] || ""
-    }
-
-    size_css =
-      case opts[:size] do
-        "xs" -> "pc-avatar-group--xs"
-        "sm" -> "pc-avatar-group--sm"
-        "md" -> "pc-avatar-group--md"
-        "lg" -> "pc-avatar-group--lg"
-        "xl" -> "pc-avatar-group--xl"
-      end
-
-    """
-      #{opts.class}
-      #{size_css}
-    """
-  end
-
-  defp src_blank?(src) do
-    !src || src == ""
-  end
+  defp src_blank?(src), do: !src || src == ""
 
   defp maybe_generate_random_color(false, _), do: nil
 

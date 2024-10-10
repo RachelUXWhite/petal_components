@@ -145,6 +145,8 @@ defmodule PetalComponents.FormTest do
     assert html =~ "user[read_terms]"
     assert html =~ "phx-feedback-for"
     assert html =~ "itemid"
+    assert html =~ "sr-only"
+    assert html =~ "peer"
   end
 
   test "radio" do
@@ -258,6 +260,13 @@ defmodule PetalComponents.FormTest do
 
     assert html =~ "Test class"
     assert html =~ "mt-1"
+
+    html =
+      rendered_to_string(~H"""
+      <.form_help_text />
+      """)
+
+    refute html =~ "pc-form-help-text"
   end
 
   test "form_field wrapper_classes" do
@@ -306,14 +315,7 @@ defmodule PetalComponents.FormTest do
     html =
       rendered_to_string(~H"""
       <.form :let={f} as={:user} for={%Ecto.Changeset{action: :update, data: %{name: ""}}}>
-        <.form_field
-          type="text_input"
-          form={f}
-          field={:name}
-          placeholder="eg. John"
-          label_class="label-class-test"
-          help_text="Help!"
-        />
+        <.form_field type="text_input" form={f} field={:name} label_class="label-class-test" />
       </.form>
       """)
 
@@ -352,6 +354,145 @@ defmodule PetalComponents.FormTest do
     assert html =~ "pc-form-field-wrapper"
     assert html =~ "pc-text-input"
     assert html =~ "w-max"
+  end
+
+  test "form_fields generate appropriate label and inputs" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} as={:user} for={%{}}>
+        <.form_field type="text_input" form={f} field={:name} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "label.pc-label") != []
+    assert Floki.find(html, "input[type='text']") != []
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="time_input" form={f} field={:name} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "label.pc-label") != []
+    assert Floki.find(html, "input[type='time']") != []
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field
+          type="checkbox_group"
+          form={f}
+          field={:roles}
+          options={[{"Read", "read"}, {"Write", "write"}]}
+        />
+      </.form>
+      """)
+
+    assert Floki.find(html, "span.pc-label") != []
+    assert Floki.find(html, "input[type='checkbox']") != []
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field
+          type="radio_group"
+          form={f}
+          field={:roles}
+          options={[{"Read", "read"}, {"Write", "write"}]}
+        />
+      </.form>
+      """)
+
+    assert Floki.find(html, "span.pc-label") != []
+    assert Floki.find(html, "input[type='radio']") != []
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="time_select" form={f} field={:time} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "span.pc-label") != []
+    html =~ "<select"
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="datetime_select" form={f} field={:date_time} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "span.pc-label") != []
+    html =~ "<select"
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="datetime_local_input" form={f} field={:date_time} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "label.pc-label") != []
+    assert Floki.find(html, "input[type='datetime-local']") != []
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="date_select" form={f} field={:date} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "span.pc-label") != []
+    html =~ "<select"
+
+    # Date input
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field type="date_input" form={f} field={:date} />
+      </.form>
+      """)
+
+    assert Floki.find(html, "label.pc-label") != []
+    assert Floki.find(html, "input[type='date']") != []
+  end
+
+  test "form_field checkbox_group label" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field
+          type="checkbox_group"
+          form={f}
+          field={:roles}
+          options={[{"Read", "read"}, {"Write", "write"}]}
+        />
+      </.form>
+      """)
+
+    assert html =~ "span"
+    assert html =~ "Roles"
+
+    html =
+      rendered_to_string(~H"""
+      <.form :let={f} for={%{}} as={:user}>
+        <.form_field
+          type="checkbox_group"
+          form={f}
+          field={:roles}
+          label="Something else"
+          options={[{"Read", "read"}, {"Write", "write"}]}
+        />
+      </.form>
+      """)
+
+    assert html =~ "Something else"
   end
 
   test "form_field checkbox label" do

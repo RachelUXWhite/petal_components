@@ -1,22 +1,27 @@
 defmodule PetalComponents.DropdownTest do
   use ComponentCase
   import PetalComponents.Dropdown
+  import PetalComponents.Icon
 
   test "dropdown" do
     assigns = %{}
 
     html =
       rendered_to_string(~H"""
-      <.dropdown class="dropdown_class" menu_items_wrapper_class="menu_items_wrapper_class" label="Dropdown">
+      <.dropdown
+        class="dropdown_class"
+        menu_items_wrapper_class="menu_items_wrapper_class"
+        label="Dropdown"
+      >
         <.dropdown_menu_item class="dropdown_menu_item_class" type="button">
-          <Heroicons.home class="w-5 h-5 text-gray-500" /> Button item with icon
+          <.icon name="hero-home" class="w-5 h-5 text-gray-500" /> Button item with icon
         </.dropdown_menu_item>
       </.dropdown>
       """)
 
     assert html =~ "x-data"
     assert html =~ "x-show"
-    assert html =~ "<svg"
+    assert find_icon(html, "hero-home")
     assert html =~ "menu_items_wrapper_class"
     assert html =~ "pc-dropdown__menu-items-wrapper"
     assert html =~ "pc-dropdown"
@@ -50,6 +55,21 @@ defmodule PetalComponents.DropdownTest do
            """) =~ "pc-dropdown__menu-items-wrapper-placement--right"
   end
 
+  test "the disabled attribute works" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.dropdown>
+        <.dropdown_menu_item disabled>Option</.dropdown_menu_item>
+      </.dropdown>
+      """)
+
+    assert html =~ "pc-dropdown__menu-item--disabled"
+    # the attribute itself
+    assert html =~ " disabled"
+  end
+
   test "it works with a custom trigger" do
     assigns = %{}
 
@@ -78,7 +98,7 @@ defmodule PetalComponents.DropdownTest do
       </.dropdown>
       """)
 
-    assert html =~ "<svg"
+    assert find_icon(html)
   end
 
   test "rest works on buttons" do
